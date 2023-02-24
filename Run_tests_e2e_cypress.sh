@@ -1,1 +1,0 @@
-docker-compose -f docker-compose.test.cypress.yml up --abort-on-container-exit

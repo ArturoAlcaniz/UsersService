@@ -1,1 +1,0 @@
-docker-compose -f docker-compose.test.jest.yml up --abort-on-container-exit

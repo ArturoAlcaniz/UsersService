@@ -1,7 +1,0 @@
-apiVersion: scheduling.k8s.io/v1
-kind: PriorityClass
-metadata:
-  name: medium-priority
-value: 500000
-globalDefault: false
-description: "En esta prioridad estan los pods necesarios para la ejecución de la aplicacion y que no son bloqueantes"

@@ -1,8 +1,0 @@
-{
-    "viewportWidth": 1280,
-    "viewportHeight": 720,
-    "testFiles": [
-        "Register/*.js",
-        "Login/*.js"
-    ]
-}
