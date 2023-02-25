@@ -1,6 +1,4 @@
 FROM arturoalcaniz/node-image:latest
-RUN apt-get update
-RUN apt-get install git -y
 RUN --mount=type=secret,id=TOKEN_GIT && \
     git clone https://${TOKEN_GIT}@github.com/ArturoAlcaniz/UsersService.git /app/UsersService/ && \
     git clone https://${TOKEN_GIT}@github.com/ArturoAlcaniz/entities-lib.git /app/entities-lib/ && \
