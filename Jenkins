@@ -5,7 +5,7 @@ pipeline {
             steps {
                 script{
                     sh ''' 
-                    bash docker_build.bash "$TOKEN_DOCKER"
+                    bash docker_build.bash "$TOKEN_DOCKER" "$TOKEN_GIT"
                     '''
                 }
             }
