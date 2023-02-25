@@ -5,5 +5,4 @@ RUN git clone https://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@github.com/Arturo
     git clone https://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@github.com/ArturoAlcaniz/entities-lib.git /app/entities-lib/ && \
     git clone https://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@github.com/ArturoAlcaniz/config-lib.git /app/config-lib/ && \
     git clone https://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@github.com/ArturoAlcaniz/certs.git /app/certs/
-COPY .dockerignore /app/.dockerignore
 EXPOSE 3022
