@@ -1,4 +1,4 @@
-DOCKER_BUILDKIT=1 docker build -t arturoalcaniz/users-service:latest -t arturoalcaniz/users-service:$(npm pkg get version | tr -d '"') -f Dockerfile .. --secret id=my_env,src=.env
+DOCKER_BUILDKIT=1 docker build --secret id=TOKEN_GIT -t arturoalcaniz/users-service:latest -t arturoalcaniz/users-service:$(npm pkg get version | tr -d '"') -f Dockerfile ..
 if [ "$1" ]
   then
     printf $1 | docker login --username arturoalcaniz --password-stdin
