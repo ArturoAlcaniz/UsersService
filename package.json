@@ -1,6 +1,6 @@
 {
     "name": "UsersService",
-    "version": "1.2.0",
+    "version": "1.2.1",
     "description": "Backend of TFG Project using nestjs",
     "author": "Arturo Alcañiz",
     "private": true,
