@@ -4,7 +4,8 @@ pipeline {
         stage('build') {
             steps {
                 script{
-                    sh ''' 
+                    sh '''
+                    echo "TOKEN_DOCKER=$TOKEN_DOCKER" >> .env
                     bash docker_build.bash "$TOKEN_DOCKER" "$TOKEN_GIT"
                     '''
                 }
