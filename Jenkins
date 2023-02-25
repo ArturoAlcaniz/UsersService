@@ -5,8 +5,8 @@ pipeline {
             steps {
                 script{
                     sh '''
-                    touch .env
-                    echo "TOKEN_DOCKER=$TOKEN_DOCKER" >> .env
+                    touch ../.env
+                    echo "TOKEN_DOCKER=$TOKEN_DOCKER" >> ../.env
                     ls -la
                     bash docker_build.bash "$TOKEN_DOCKER" "$TOKEN_GIT"
                     '''
