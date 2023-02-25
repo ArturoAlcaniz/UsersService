@@ -6,7 +6,7 @@ pipeline {
                 script{
                     sh '''
                     touch .env
-                    echo "TOKEN_GIT=$TOKEN_GIT" >> .env
+                    echo "TOKEN_GIT=\"$TOKEN_GIT\"" >> .env
                     bash docker_build.bash "$TOKEN_DOCKER"
                     '''
                 }
