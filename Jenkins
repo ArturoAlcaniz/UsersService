@@ -4,8 +4,7 @@ pipeline {
         stage('build') {
             steps {
                 script{
-                    sh '''
-                    cd UsersService && 
+                    sh ''' 
                     bash docker_build.bash "$TOKEN_DOCKER"
                     '''
                 }
