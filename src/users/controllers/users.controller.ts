@@ -191,11 +191,11 @@ export class UsersController {
 
         response.status(200).json({
             message: ["successfully_logged_in"],
-            USERNAME: u.userName,
-            EMAIL: u.email,
-            COINS: u.coins,
-            AVATAR: u.avatar,
-            ROL: u.rol,
+            userName: u.userName,
+            email: u.email,
+            coins: u.coins,
+            avatar: u.avatar,
+            rol: u.rol,
         });
         this.logger.info(
             "Login Sucessfully {IP}".replace(
@@ -328,7 +328,7 @@ export class UsersController {
         
         response.status(200).json({
             message: ["successfully_payment"],
-            COINS: user.coins
+            coins: user.coins
         });
 
     }
@@ -383,10 +383,10 @@ export class UsersController {
         });
         response.status(200).json({
             message: ["successfully_logged_in"],
-            USERNAME: user.userName,
-            EMAIL: user.email,
-            COINS: user.coins,
-            AVATAR: user.avatar,
+            userName: user.userName,
+            email: user.email,
+            coins: user.coins,
+            avatar: user.avatar,
         });
     }
 
@@ -596,7 +596,7 @@ export class UsersController {
 
         this.usersService.updateUser(user, payload)
         this.usersService.save(user);
-        response.status(200).json({message: ["successfully_updated"], AVATAR: user.avatar});
+        response.status(200).json({message: ["successfully_updated"], avatar: user.avatar});
         this.logger.info(
             "Update User Sucessfully {IP} {FILE}".replace(
                 "{IP}",
@@ -769,7 +769,7 @@ export class UsersController {
         codes[0].amount = codes[0].amount-1;
         await this.codesService.save(codes[0]);
 
-        response.status(200).json({message: ["successfully_code_redeemed"], COINS: user.coins});
+        response.status(200).json({message: ["successfully_code_redeemed"], coins: user.coins});
         this.logger.info(
             "Create Code Sucessfully {CODE} {IP} {USER}"
             .replace("{IP}", request.headers["x-forwarded-for"].toString())
