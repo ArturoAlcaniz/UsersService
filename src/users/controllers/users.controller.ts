@@ -467,7 +467,7 @@ export class UsersController {
         this.usersService.updateUser(user, payload);
         user.avatar = avatar.filename;
         this.usersService.save(user);
-        response.status(200).json({message: ["successfully_updated"], AVATAR: user.avatar});
+        response.status(200).json({message: ["successfully_updated"], avatar: user.avatar});
         this.logger.info(
             "Update User Sucessfully {IP} {FILE}".replace(
                 "{IP}",
