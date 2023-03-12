@@ -26,7 +26,8 @@
         "esModuleInterop": true,
         "incremental": true,
         "types": ["node","jest"],
-        "typeRoots": ["./node_module/@types", "./src/types"]
+        "typeRoots": ["./node_module/@types", "./src/types"],
+        "preserveConstEnums": true
     },
     "typeAcquisition": { "include": ["jest"] },
 
