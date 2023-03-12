@@ -1,3 +1,4 @@
+import './paths';
 import {NestFactory} from "@nestjs/core";
 import {ApplicationModule} from "./app.module";
 import {SwaggerModule, DocumentBuilder} from "@nestjs/swagger";
