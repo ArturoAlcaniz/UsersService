@@ -27,6 +27,7 @@
         "typeRoots": ["./node_module/@types", "./src/types"]
     },
     "typeAcquisition": { "include": ["jest"] },
-    "include": ["src/**/*", "test/**/*", "**/*.spec.ts", "../entities-lib/src/**/*"],
+
+    "include": ["src/**/*",  "**/*.ts", "**/*.tsx", "test/**/*", "**/*.spec.ts"],
     "exclude": ["node_modules"]
 }
