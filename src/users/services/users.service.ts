@@ -1,11 +1,11 @@
 import {InjectRepository} from "@nestjs/typeorm";
-import {User} from "$/../../../entities-lib/src/entities/user.entity";
-import {CustomHashing} from "../../hashing/hashing.service";
-import {BaseService} from "../../commons/service.commons";
+import {User} from "@entities-lib/src/entities/user.entity";
+import {CustomHashing} from "@hashing/hashing.service";
+import {BaseService} from "@commons/service.commons";
 import {FindOneOptions, Repository} from "typeorm";
 import {Injectable} from "@nestjs/common";
 import {UserBlocked} from "../types/user-blocked.type";
-import {ModifyUserDto} from "../../../../entities-lib/src/requests/modifyUser.dto";
+import {ModifyUserDto} from "@entities-lib/src/requests/modifyUser.dto";
 import { CodeEmail } from "../types/code-email.type";
 
 @Injectable()

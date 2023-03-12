@@ -1,8 +1,8 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Code } from "$/../../../entities-lib/src/entities/code.entity";
+import { Code } from "@entities-lib/src/entities/code.entity";
 import { Repository } from "typeorm";
-import { BaseService } from "../../commons/service.commons";
+import { BaseService } from "@commons/service.commons";
 import { CreateCodeTokenDto } from "../dtos/createCodeToken.dto";
 import { Logger } from "winston";
 

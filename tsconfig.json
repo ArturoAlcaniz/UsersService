@@ -6,6 +6,13 @@
         "declaration": true,
         "declarationMap": true,
         "removeComments": true,
+        "paths": {
+            "@entities-lib/*": ["./../entities-lib/*"],
+            "@config-lib/*": ["./../config-lib/*"],
+            "@commons/*": ["./src/commons/*"],
+            "@hashing/*": ["./src/hashing/*"],
+            "@root/*": ["./*"]
+        },
         "emitDecoratorMetadata": true,
         "experimentalDecorators": true,
         "target": "es2022",

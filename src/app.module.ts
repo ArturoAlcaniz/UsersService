@@ -1,8 +1,8 @@
 import {Response} from "express";
 import {ConfigModule} from "@nestjs/config";
 import {TypeOrmModule} from "@nestjs/typeorm";
-import {User} from "$/../../../entities-lib/src/entities/user.entity";
-import { jwtConfig } from "$/../../../config-lib/src/jwt.config";
+import {User} from "@entities-lib/src/entities/user.entity";
+import { jwtConfig } from "@config-lib/src/jwt.config";
 import {AppController} from "./app.controller";
 import {HashingModule} from "./hashing/hashing.module";
 import {UsersModule} from "./users/users.module";
@@ -16,12 +16,12 @@ import {HttpModule} from "@nestjs/axios";
 import {ThrottlerModule} from "@nestjs/throttler";
 import {WinstonModule} from "nest-winston";
 import * as winston from "winston";
-import { Product } from "$/../../../entities-lib/src/entities/product.entity";
-import { ProductImage } from "$/../../../entities-lib/src/entities/productimage.entity";
-import { Payment } from "$/../../../entities-lib/src/entities/payment.entity"
-import { Code } from "$/../../../entities-lib/src/entities/code.entity";
-import { Invoice } from "$/../../../entities-lib/src/entities/invoice.entity";
-import { InvoiceItem } from "$/../../../entities-lib/src/entities/invoiceItem.entity";
+import { Product } from "@entities-lib/src/entities/product.entity";
+import { ProductImage } from "@entities-lib/src/entities/productimage.entity";
+import { Payment } from "@entities-lib/src/entities/payment.entity"
+import { Code } from "@entities-lib/src/entities/code.entity";
+import { Invoice } from "@entities-lib/src/entities/invoice.entity";
+import { InvoiceItem } from "@entities-lib/src/entities/invoiceItem.entity";
 import { JwtModule } from "@nestjs/jwt";
 
 @Module({

@@ -1,9 +1,9 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { FindOneOptions, Repository } from "typeorm";
-import { BaseService } from "../../commons/service.commons";
-import { Payment } from "$/../../../entities-lib/src/entities/payment.entity";
-import { User } from "$/../../../entities-lib/src/entities/user.entity";
+import { BaseService } from "@commons/service.commons";
+import { Payment } from "@entities-lib/src/entities/payment.entity";
+import { User } from "@entities-lib/src/entities/user.entity";
 
 @Injectable()
 export class PaymentsService extends BaseService<Payment> {

@@ -1,5 +1,5 @@
 import {Controller, Get, Req, UseGuards} from "@nestjs/common";
-import {User} from "$/../../../entities-lib/src/entities/user.entity";
+import {User} from "@entities-lib/src/entities/user.entity";
 import {Request} from "express";
 import {AuthenticatedGuard} from "../guards/authenticated.guard";
 import {ApiOkResponse, ApiTags} from "@nestjs/swagger";
