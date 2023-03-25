@@ -6,7 +6,8 @@
     "private": true,
     "license": "UNLICENSED",
     "scripts": {
-        "start": "ts-node --files src/main",
+        "start": "ts-node --files src/main --transpile-only",
+        "check": "ts-node --files src/main",
         "clean": "rm -Rf ./dist/",
         "build:ci": "npm run build",
         "build": "npm run clean && mkdir ./dist && tsc --project tsconfig.build.json",
