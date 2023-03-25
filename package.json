@@ -7,7 +7,7 @@
     "license": "UNLICENSED",
     "scripts": {
         "start": "ts-node --files src/main --transpile-only",
-        "check": "ts-node --files src/main",
+        "tsc": "nodemon --watch src -e ts --exec \"(tsc && node dist/UsersService/src/main.js) || exit 1\"",
         "clean": "rm -Rf ./dist/",
         "build:ci": "npm run build",
         "build": "npm run clean && mkdir ./dist && tsc --project tsconfig.build.json",
@@ -42,6 +42,7 @@
         "multer": "^2.0.0-rc.4",
         "mysql": "^2.18.1",
         "nest-winston": "^1.9.1",
+        "nodemon": "^2.0.22",
         "reflect-metadata": "^0.1.13",
         "rxjs": "^7.8.0",
         "typeorm": "^0.3.12",

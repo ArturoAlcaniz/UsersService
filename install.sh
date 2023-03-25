@@ -6,4 +6,4 @@ cd /app/config-lib
 npm install
 cd /app/UsersService
 npm install
-npm start 
+npm run tsc 
