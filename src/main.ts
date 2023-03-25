@@ -7,7 +7,9 @@ import cookieParser from "cookie-parser";
 
 async function bootstrap() {
 
-    const app = await NestFactory.create(ApplicationModule);
+    const app = await NestFactory.create(ApplicationModule, {
+        snapshot: true,
+    });
 
     const config = new DocumentBuilder()
         .setTitle("API Document")

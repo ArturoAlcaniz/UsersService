@@ -1,4 +1,3 @@
-import {Response} from "express";
 import {ConfigModule} from "@nestjs/config";
 import {TypeOrmModule} from "@nestjs/typeorm";
 import {User} from "@entities-lib/src/entities/user.entity";
@@ -8,8 +7,6 @@ import {HashingModule} from "./hashing/hashing.module";
 import {UsersModule} from "./users/users.module";
 import {
     Module,
-    NestMiddleware,
-    MiddlewareConsumer,
 } from "@nestjs/common";
 import path from "path";
 import {HttpModule} from "@nestjs/axios";
@@ -23,6 +20,7 @@ import { Code } from "@entities-lib/src/entities/code.entity";
 import { Invoice } from "@entities-lib/src/entities/invoice.entity";
 import { InvoiceItem } from "@entities-lib/src/entities/invoiceItem.entity";
 import { JwtModule } from "@nestjs/jwt";
+import { DevtoolsModule } from "@nestjs/devtools-integration";
 
 @Module({
     imports: [
@@ -30,8 +28,8 @@ import { JwtModule } from "@nestjs/jwt";
         JwtModule.register(jwtConfig()),
         TypeOrmModule.forRoot({
             type: "mariadb",
-            host: "database",
-            port: 3306,
+            host: process.env.DB_HOST,
+            port: process.env.DB_PORT && Number.parseFloat(process.env.DB_PORT),
             username: process.env.DB_USER,
             password: process.env.DB_PASS,
             database: process.env.DB_NAME,
@@ -59,6 +57,9 @@ import { JwtModule } from "@nestjs/jwt";
                     level: "info",
                 }),
             ],
+        }),
+        DevtoolsModule.register({
+            http: process.env.NODE_ENV === 'develop',
         }),
     ],
     providers: [],
