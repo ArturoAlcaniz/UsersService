@@ -4,11 +4,13 @@ import {ApplicationModule} from "./app.module";
 import {SwaggerModule, DocumentBuilder} from "@nestjs/swagger";
 import {ValidationPipe} from "@nestjs/common";
 import cookieParser from "cookie-parser";
+import { prometheusMiddleware } from './middlewares/prometheus.middleware';
 
 async function bootstrap() {
 
     const app = await NestFactory.create(ApplicationModule, {
         snapshot: true,
+        logger: ['error', 'warn'],
     });
 
     const config = new DocumentBuilder()
@@ -29,6 +31,7 @@ async function bootstrap() {
     );
 
     app.use(cookieParser());
+    app.use(prometheusMiddleware);
 
     await app.listen(process.env.USERS_CONTAINER_PORT);
 }
