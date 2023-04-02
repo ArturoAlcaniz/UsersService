@@ -10,7 +10,6 @@ async function bootstrap() {
 
     const app = await NestFactory.create(ApplicationModule, {
         snapshot: true,
-        logger: ['error', 'warn'],
     });
 
     const config = new DocumentBuilder()
