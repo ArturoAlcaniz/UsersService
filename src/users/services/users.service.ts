@@ -6,7 +6,7 @@ import {FindOneOptions, Repository} from "typeorm";
 import {Injectable} from "@nestjs/common";
 import {UserBlocked} from "../types/user-blocked.type";
 import {ModifyUserDto} from "@entities-lib/src/requests/modifyUser.dto";
-import { CodeEmail } from "../types/code-email.type";
+import {CodeEmail} from "../types/code-email.type";
 
 @Injectable()
 export class UsersService extends BaseService<User> {
@@ -38,7 +38,7 @@ export class UsersService extends BaseService<User> {
         user.userName = data.username;
         if (data.newPass) {
             user.password = this.hashService.stringToHash(data.newPass);
-            console.log(data.newPass)
+            console.log(data.newPass);
         }
         return user;
     }

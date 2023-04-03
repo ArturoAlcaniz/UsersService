@@ -1,14 +1,15 @@
-import { Injectable } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
-import { FindOneOptions, Repository } from "typeorm";
-import { BaseService } from "@commons/service.commons";
-import { Payment } from "@entities-lib/src/entities/payment.entity";
-import { User } from "@entities-lib/src/entities/user.entity";
+import {Injectable} from "@nestjs/common";
+import {InjectRepository} from "@nestjs/typeorm";
+import {FindOneOptions, Repository} from "typeorm";
+import {BaseService} from "@commons/service.commons";
+import {Payment} from "@entities-lib/src/entities/payment.entity";
+import {User} from "@entities-lib/src/entities/user.entity";
 
 @Injectable()
 export class PaymentsService extends BaseService<Payment> {
     constructor(
-        @InjectRepository(Payment) private paymentRepository: Repository<Payment>
+        @InjectRepository(Payment)
+        private paymentRepository: Repository<Payment>
     ) {
         super();
     }
@@ -28,7 +29,7 @@ export class PaymentsService extends BaseService<Payment> {
         return true;
     }
 
-    createPayment(id: string, coins: string, user: User): Payment{
+    createPayment(id: string, coins: string, user: User): Payment {
         let payment: Payment = new Payment();
         payment.id = id;
         payment.coins = parseInt(coins);

@@ -1,5 +1,19 @@
 import {LoginDto} from "@entities-lib/src/requests/login.dto";
-import {Body, Inject, Post, Req, Res, UseGuards, Controller, Get, UseInterceptors, UploadedFile, UploadedFiles, StreamableFile, Param} from "@nestjs/common";
+import {
+    Body,
+    Inject,
+    Post,
+    Req,
+    Res,
+    UseGuards,
+    Controller,
+    Get,
+    UseInterceptors,
+    UploadedFile,
+    UploadedFiles,
+    StreamableFile,
+    Param,
+} from "@nestjs/common";
 import {Response, Request} from "express";
 import {CreateUserDto} from "@entities-lib/src/requests/createUser.dto";
 import {User} from "@entities-lib/src/entities/user.entity";
@@ -17,22 +31,21 @@ import {ModifyUserDto} from "@entities-lib/src/requests/modifyUser.dto";
 import {SendCodeDto} from "@entities-lib/src/requests/sendcode.dto";
 import {v4 as uuidv4} from "uuid";
 import {SendCodeLoginDto} from "@entities-lib/src/requests/sendCodeLogin.dto";
-import { CodeEmail } from "../types/code-email.type";
-import { FileInterceptor } from "@nestjs/platform-express";
-import { Express } from 'express';
-import { Multer } from 'multer';
-import { createReadStream } from "fs";
-import { join } from "path";
-import fs from 'fs';
+import {CodeEmail} from "../types/code-email.type";
+import {FileInterceptor} from "@nestjs/platform-express";
+import {Express} from "express";
+import {Multer} from "multer";
+import {createReadStream} from "fs";
+import {join} from "path";
+import fs from "fs";
 import {BuyCoinsDto} from "@entities-lib/src/requests/buyCoins.dto";
-import { PaymentsService } from "../services/payments.service";
-import { Payment } from "@entities-lib/src/entities/payment.entity";
-import { CreateCodeTokenDto } from "../dtos/createCodeToken.dto";
-import { Code } from "@entities-lib/src/entities/code.entity";
-import { CodesService } from "../services/codes.service";
-import { DeepPartial } from "typeorm";
-import { RedeemCodeTokenDto } from "../dtos/redeemCodeToken.dto";
-
+import {PaymentsService} from "../services/payments.service";
+import {Payment} from "@entities-lib/src/entities/payment.entity";
+import {CreateCodeTokenDto} from "../dtos/createCodeToken.dto";
+import {Code} from "@entities-lib/src/entities/code.entity";
+import {CodesService} from "../services/codes.service";
+import {DeepPartial} from "typeorm";
+import {RedeemCodeTokenDto} from "../dtos/redeemCodeToken.dto";
 
 @ApiTags("User Controller")
 @Controller("users")
@@ -80,15 +93,16 @@ export class UsersController {
         let codeEmail: CodeEmail = this.createCodeEmail();
 
         await lastValueFrom(
-            this.httpService.post(`http://${process.env.MAILER_CONTAINER_NAME}:${process.env.MAILER_CONTAINER_PORT}/mailer/sendCodeRegister`,
+            this.httpService.post(
+                `http://${process.env.MAILER_CONTAINER_NAME}:${process.env.MAILER_CONTAINER_PORT}/mailer/sendCodeRegister`,
                 JSON.stringify({email: payload.email, code: codeEmail.code}),
                 {
-                    headers: {"content-type": "application/json"}
+                    headers: {"content-type": "application/json"},
                 }
             )
-        )
+        );
 
-        this.usersService.usersRegistering.set(codeEmail.code, user)
+        this.usersService.usersRegistering.set(codeEmail.code, user);
         this.usersService.codesSent.set(payload.email, codeEmail);
 
         response.status(200).json({
@@ -110,12 +124,15 @@ export class UsersController {
         @Body() payload: CreateUserDto,
         @Res({passthrough: true}) response: Response
     ) {
-        if(!payload.code || !this.usersService.usersRegistering.get(payload.code)){
+        if (
+            !payload.code ||
+            !this.usersService.usersRegistering.get(payload.code)
+        ) {
             response.status(400).json({message: ["code_invalid"]});
             return;
         }
 
-        let user: User = this.usersService.usersRegistering.get(payload.code)
+        let user: User = this.usersService.usersRegistering.get(payload.code);
 
         if (!(await this.usersService.validateUniqueEmail(user))) {
             response
@@ -137,7 +154,7 @@ export class UsersController {
             return;
         }
 
-        if(!this.checkCodeEmail(this.usersService.codesSent.get(user.email))){
+        if (!this.checkCodeEmail(this.usersService.codesSent.get(user.email))) {
             response.status(400).json({message: ["code_expired"]});
             return;
         }
@@ -178,7 +195,7 @@ export class UsersController {
             return;
         }
 
-        if(!this.checkCodeEmail(this.usersService.codesSent.get(u.email))){
+        if (!this.checkCodeEmail(this.usersService.codesSent.get(u.email))) {
             response.status(400).json({message: ["code_expired"]});
             return;
         }
@@ -251,13 +268,14 @@ export class UsersController {
         let codeEmail: CodeEmail = this.createCodeEmail();
 
         await lastValueFrom(
-            this.httpService.post(`http://${process.env.MAILER_CONTAINER_NAME}:${process.env.MAILER_CONTAINER_PORT}/mailer/sendCodeLogin`,
+            this.httpService.post(
+                `http://${process.env.MAILER_CONTAINER_NAME}:${process.env.MAILER_CONTAINER_PORT}/mailer/sendCodeLogin`,
                 JSON.stringify({email: payload.email, code: codeEmail.code}),
                 {
-                    headers: {"content-type": "application/json"}
+                    headers: {"content-type": "application/json"},
                 }
             )
-        )
+        );
 
         const jwt = this.jwtService.sign({userId: user.id});
         this.usersService.usersLoggedInUnconfirmed.set(user.id, jwt);
@@ -296,41 +314,47 @@ export class UsersController {
         });
 
         const headersRequest = {
-            'Content-Type': 'application/json', // afaik this one is not needed
-            'Authorization': `Basic ${Buffer.from(process.env.CLIENT_ID+":"+process.env.SECRET_ID).toString('base64')}`,
+            "Content-Type": "application/json", // afaik this one is not needed
+            Authorization: `Basic ${Buffer.from(
+                process.env.CLIENT_ID + ":" + process.env.SECRET_ID
+            ).toString("base64")}`,
         };
 
         const infoPayment = await firstValueFrom(
             this.httpService.get(
                 "https://www.sandbox.paypal.com/v2/checkout/orders/" +
-                    payload.id + "?grant_type=client_credentials&ignoreCache=true",
-                    { headers: headersRequest}
+                    payload.id +
+                    "?grant_type=client_credentials&ignoreCache=true",
+                {headers: headersRequest}
             )
         );
 
-        if(infoPayment.data.status != "COMPLETED") {
+        if (infoPayment.data.status != "COMPLETED") {
             response.status(400).json({message: "Error buying coins"});
             return;
         }
 
-        let payment: Payment = this.paymentsService.createPayment(payload.id, infoPayment.data.purchase_units[0].amount.value, user)
-        
-        if(!this.paymentsService.validatePayment(payment)) {
-            response.status(400).json({message: "Payment already added"})
+        let payment: Payment = this.paymentsService.createPayment(
+            payload.id,
+            infoPayment.data.purchase_units[0].amount.value,
+            user
+        );
+
+        if (!this.paymentsService.validatePayment(payment)) {
+            response.status(400).json({message: "Payment already added"});
             return;
         }
 
-        await this.paymentsService.save(payment)
+        await this.paymentsService.save(payment);
 
-        user.coins = user.coins + payment.coins
-        
-        await this.usersService.save(user)
-        
+        user.coins = user.coins + payment.coins;
+
+        await this.usersService.save(user);
+
         response.status(200).json({
             message: ["successfully_payment"],
-            coins: user.coins
+            coins: user.coins,
         });
-
     }
 
     @UseGuards(ThrottlerGuard)
@@ -395,9 +419,7 @@ export class UsersController {
     @ApiOkResponse()
     @Post("modify")
     @UseGuards(AuthenticatedGuard)
-    @UseInterceptors(
-	    FileInterceptor('avatar')
-    )
+    @UseInterceptors(FileInterceptor("avatar"))
     async modifyUser(
         @Body() payload: ModifyUserDto,
         @Res({passthrough: true}) response: Response,
@@ -431,14 +453,14 @@ export class UsersController {
 
         if (
             payload.username != user.userName &&
-            !(await this.usersService.validateUniqueUsernameWithUsername(payload.username))
+            !(await this.usersService.validateUniqueUsernameWithUsername(
+                payload.username
+            ))
         ) {
-            response
-                .status(400)
-                .json({
-                    message: ["username_already_exist"],
-                    formError: "username",
-                });
+            response.status(400).json({
+                message: ["username_already_exist"],
+                formError: "username",
+            });
             this.logger.info(
                 "Fail Update User (username_already_exist) {IP}".replace(
                     "{IP}",
@@ -450,7 +472,9 @@ export class UsersController {
 
         if (
             payload.email != user.email &&
-            !(await this.usersService.validateUniqueEmailWithEmail(payload.email))
+            !(await this.usersService.validateUniqueEmailWithEmail(
+                payload.email
+            ))
         ) {
             response
                 .status(400)
@@ -467,26 +491,24 @@ export class UsersController {
         this.usersService.updateUser(user, payload);
         user.avatar = avatar.filename;
         this.usersService.save(user);
-        response.status(200).json({message: ["successfully_updated"], avatar: user.avatar});
+        response
+            .status(200)
+            .json({message: ["successfully_updated"], avatar: user.avatar});
         this.logger.info(
-            "Update User Sucessfully {IP} {FILE}".replace(
-                "{IP}",
-                request.headers["x-forwarded-for"].toString()
-            ).replace(
-                "{FILE}",
-                avatar.filename
-            )
+            "Update User Sucessfully {IP} {FILE}"
+                .replace("{IP}", request.headers["x-forwarded-for"].toString())
+                .replace("{FILE}", avatar.filename)
         );
 
         await lastValueFrom(
-            this.httpService.post(`http://${process.env.MAILER_CONTAINER_NAME}:${process.env.MAILER_CONTAINER_PORT}/mailer/sendDataChangedConfirm`,
+            this.httpService.post(
+                `http://${process.env.MAILER_CONTAINER_NAME}:${process.env.MAILER_CONTAINER_PORT}/mailer/sendDataChangedConfirm`,
                 JSON.stringify({email: user.email}),
                 {
-                    headers: {"content-type": "application/json"}
+                    headers: {"content-type": "application/json"},
                 }
             )
-        )
-
+        );
     }
 
     @UseGuards(ThrottlerGuard)
@@ -495,15 +517,11 @@ export class UsersController {
     @Get("avatar/:avatar")
     @UseGuards(AuthenticatedGuard)
     async getAvatar(
-        @Param('avatar') avatar: string,
+        @Param("avatar") avatar: string,
         @Res({passthrough: true}) response: Response,
-        @Req() request: Request,
+        @Req() request: Request
     ) {
-
-        let file = "files/{FILENAME}".replace(
-            "{FILENAME}",
-            avatar
-        )
+        let file = "files/{FILENAME}".replace("{FILENAME}", avatar);
         if (fs.existsSync(file)) {
             const f = createReadStream(join(process.cwd(), file));
             return new StreamableFile(f);
@@ -517,11 +535,11 @@ export class UsersController {
     @UseGuards(AuthenticatedGuard)
     async getAvatarDefault(
         @Res({passthrough: true}) response: Response,
-        @Req() request: Request,
+        @Req() request: Request
     ) {
-        let file = "static-images/UserProfile.png"
+        let file = "static-images/UserProfile.png";
         const f = createReadStream(join(process.cwd(), file));
-        return new StreamableFile(f); 
+        return new StreamableFile(f);
     }
 
     @UseGuards(ThrottlerGuard)
@@ -532,7 +550,7 @@ export class UsersController {
     async modifyUserWithoutAvatar(
         @Body() payload: ModifyUserDto,
         @Res({passthrough: true}) response: Response,
-        @Req() request: Request,
+        @Req() request: Request
     ) {
         let user: User = await this.usersService.findOne({
             where: {
@@ -561,14 +579,14 @@ export class UsersController {
 
         if (
             payload.username != user.userName &&
-            !(await this.usersService.validateUniqueUsernameWithUsername(payload.username))
+            !(await this.usersService.validateUniqueUsernameWithUsername(
+                payload.username
+            ))
         ) {
-            response
-                .status(400)
-                .json({
-                    message: ["username_already_exist"],
-                    formError: "username",
-                });
+            response.status(400).json({
+                message: ["username_already_exist"],
+                formError: "username",
+            });
             this.logger.info(
                 "Fail Update User (username_already_exist) {IP}".replace(
                     "{IP}",
@@ -580,7 +598,9 @@ export class UsersController {
 
         if (
             payload.email != user.email &&
-            !(await this.usersService.validateUniqueEmailWithEmail(payload.email))
+            !(await this.usersService.validateUniqueEmailWithEmail(
+                payload.email
+            ))
         ) {
             response
                 .status(400)
@@ -594,9 +614,11 @@ export class UsersController {
             return;
         }
 
-        this.usersService.updateUser(user, payload)
+        this.usersService.updateUser(user, payload);
         this.usersService.save(user);
-        response.status(200).json({message: ["successfully_updated"], avatar: user.avatar});
+        response
+            .status(200)
+            .json({message: ["successfully_updated"], avatar: user.avatar});
         this.logger.info(
             "Update User Sucessfully {IP} {FILE}".replace(
                 "{IP}",
@@ -626,7 +648,7 @@ export class UsersController {
     async createCodeToken(
         @Body() payload: CreateCodeTokenDto,
         @Res({passthrough: true}) response: Response,
-        @Req() request: Request,
+        @Req() request: Request
     ) {
         let user: User = await this.usersService.findOne({
             where: {
@@ -634,13 +656,17 @@ export class UsersController {
             },
         });
 
-        if (user == null ||  user.rol != "ADMIN") {
+        if (user == null || user.rol != "ADMIN") {
             response.status(400).json({
-                message: ["invalid_access"], formError: "access"
+                message: ["invalid_access"],
+                formError: "access",
             });
             this.logger.info(
                 "Fail Create code (invalid_access) {IP} {USER}"
-                    .replace("{IP}", request.headers["x-forwarded-for"].toString())
+                    .replace(
+                        "{IP}",
+                        request.headers["x-forwarded-for"].toString()
+                    )
                     .replace("{USER}", user.email)
             );
             return;
@@ -658,8 +684,12 @@ export class UsersController {
             );
             return;
         }
-        
-        if(payload.ends != null && payload.ends.length > 0 && new Date() < new Date(payload.ends)) {
+
+        if (
+            payload.ends != null &&
+            payload.ends.length > 0 &&
+            new Date() < new Date(payload.ends)
+        ) {
             response
                 .status(400)
                 .json({message: ["invalid_enddate"], formError: "ends"});
@@ -672,7 +702,9 @@ export class UsersController {
             return;
         }
 
-        if ((await this.codesService.findOne({where: {ID: payload.id}})) != null) {
+        if (
+            (await this.codesService.findOne({where: {ID: payload.id}})) != null
+        ) {
             response
                 .status(400)
                 .json({message: ["code_already_exist"], formError: "id"});
@@ -685,13 +717,17 @@ export class UsersController {
             return;
         }
 
-        let code: DeepPartial<Code> = await (this.codesService.save(this.codesService.createCode(payload)));
-        response.status(200).json({message: ["successfully_code_created"], code: code});
+        let code: DeepPartial<Code> = await this.codesService.save(
+            this.codesService.createCode(payload)
+        );
+        response
+            .status(200)
+            .json({message: ["successfully_code_created"], code: code});
         this.logger.info(
             "Create Code Sucessfully {CODE} {IP} {USER}"
-            .replace("{IP}", request.headers["x-forwarded-for"].toString())
-            .replace("{USER}", user.email)
-            .replace("{CODE}", code.id)
+                .replace("{IP}", request.headers["x-forwarded-for"].toString())
+                .replace("{USER}", user.email)
+                .replace("{CODE}", code.id)
         );
     }
 
@@ -703,8 +739,7 @@ export class UsersController {
         @Res({passthrough: true}) response: Response,
         @Req() request: Request
     ) {
-        
-        let codes: Code[] = await this.codesService.find({})
+        let codes: Code[] = await this.codesService.find({});
 
         return codes;
     }
@@ -717,7 +752,7 @@ export class UsersController {
     async redeemCodeToken(
         @Body() payload: RedeemCodeTokenDto,
         @Res({passthrough: true}) response: Response,
-        @Req() request: Request,
+        @Req() request: Request
     ) {
         let user: User = await this.usersService.findOne({
             where: {
@@ -727,17 +762,21 @@ export class UsersController {
 
         if (user == null) {
             response.status(400).json({
-                message: ["invalid_access"], formError: "access"
+                message: ["invalid_access"],
+                formError: "access",
             });
             this.logger.info(
                 "Fail Create code (invalid_access) {IP} {USER}"
-                    .replace("{IP}", request.headers["x-forwarded-for"].toString())
+                    .replace(
+                        "{IP}",
+                        request.headers["x-forwarded-for"].toString()
+                    )
                     .replace("{USER}", user.email)
             );
             return;
         }
-        
-        let codes = (await this.codesService.find(payload.id));
+
+        let codes = await this.codesService.find(payload.id);
         if (codes.length == 0) {
             response
                 .status(400)
@@ -766,15 +805,17 @@ export class UsersController {
         user.coins = user.coins + codes[0].coins;
         await this.usersService.save(user);
 
-        codes[0].amount = codes[0].amount-1;
+        codes[0].amount = codes[0].amount - 1;
         await this.codesService.save(codes[0]);
 
-        response.status(200).json({message: ["successfully_code_redeemed"], coins: user.coins});
+        response
+            .status(200)
+            .json({message: ["successfully_code_redeemed"], coins: user.coins});
         this.logger.info(
             "Create Code Sucessfully {CODE} {IP} {USER}"
-            .replace("{IP}", request.headers["x-forwarded-for"].toString())
-            .replace("{USER}", user.email)
-            .replace("{CODE}", codes[0].id)
+                .replace("{IP}", request.headers["x-forwarded-for"].toString())
+                .replace("{USER}", user.email)
+                .replace("{CODE}", codes[0].id)
         );
     }
 
@@ -833,8 +874,8 @@ export class UsersController {
             };
             this.usersService.usersBlocked.set(userToCheck, userBlocked);
         }
-        const timeBanned = this.usersService.usersBlocked.get(userToCheck)
-            .until;
+        const timeBanned =
+            this.usersService.usersBlocked.get(userToCheck).until;
         return timeBanned > new Date().getTime();
     }
 
@@ -856,13 +897,13 @@ export class UsersController {
     createCodeEmail() {
         let code: CodeEmail = {
             code: uuidv4(),
-            expiration: new Date().getTime()+3600000 //1h expiration
-        }
+            expiration: new Date().getTime() + 3600000, //1h expiration
+        };
 
         return code;
     }
 
     checkCodeEmail(code: CodeEmail) {
-        return new Date().getTime()<=code.expiration 
+        return new Date().getTime() <= code.expiration;
     }
 }

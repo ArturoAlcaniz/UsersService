@@ -7,7 +7,6 @@ import {ApiOkResponse, ApiTags} from "@nestjs/swagger";
 @ApiTags("Session Controller")
 @Controller("sessions")
 export class SessionsController {
-
     @ApiOkResponse({type: User})
     @Get("user")
     @UseGuards(AuthenticatedGuard)

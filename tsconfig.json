@@ -25,11 +25,11 @@
         "resolveJsonModule": true,
         "esModuleInterop": true,
         "incremental": true,
-        "types": ["node","jest"],
+        "types": ["node", "jest"],
         "typeRoots": ["./node_module/@types", "./src/types"],
         "preserveConstEnums": true
     },
-    "typeAcquisition": { "include": ["jest"] },
+    "typeAcquisition": {"include": ["jest"]},
 
     "include": ["src/**/*"],
     "exclude": ["node_modules", "**/*.spec.ts", "./dist"]

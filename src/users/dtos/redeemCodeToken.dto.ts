@@ -1,4 +1,11 @@
-import { IsDecimal, IsNotEmpty, IsNumber, IsNumberString, isNumberString, IsString } from "class-validator";
+import {
+    IsDecimal,
+    IsNotEmpty,
+    IsNumber,
+    IsNumberString,
+    isNumberString,
+    IsString,
+} from "class-validator";
 
 export class RedeemCodeTokenDto {
     @IsNotEmpty()

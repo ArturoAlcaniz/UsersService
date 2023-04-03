@@ -2,7 +2,7 @@ import {DeepPartial, DeleteResult, FindManyOptions, Repository} from "typeorm";
 
 export abstract class BaseService<T> {
     abstract getRepository(): Repository<T>;
-    
+
     find(id: any): Promise<T[]> {
         return this.getRepository().find(id);
     }
