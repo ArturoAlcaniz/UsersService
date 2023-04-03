@@ -35,19 +35,6 @@ async function bootstrap() {
   );
   app.use(cookieParser());
 
-  // Agrega el middleware de prometheus con la opción customLabels
-  app.use((req, res, next) => {
-    const end = res.end;
-    res.end = function (...args: any) {
-      httpRequestCounter
-        .labels(req.method, req.path, res.statusCode.toString())
-        .inc();
-      end.apply(res, args);
-    };
-    next();
-  });
-  
-
   // Elimina el middleware para registrar las solicitudes HTTP
   // Registra la métrica http_requests_total en el middleware de prometheus
   const httpRequestCounter = new Prometheus.Counter({
