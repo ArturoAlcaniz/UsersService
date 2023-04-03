@@ -5,10 +5,4 @@ import {Response} from "express";
 
 @ApiTags("APP Controller")
 @Controller()
-export class AppController {
-    @Get('metrics')
-    async getMetrics(@Res() res: Response) {
-      res.set('Content-Type', Prometheus.register.contentType);
-      res.send(await Prometheus.register.metrics());
-    }
-}
+export class AppController {}

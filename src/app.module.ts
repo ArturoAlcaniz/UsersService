@@ -19,6 +19,7 @@ import {Invoice} from "@entities-lib/src/entities/invoice.entity";
 import {InvoiceItem} from "@entities-lib/src/entities/invoiceItem.entity";
 import {JwtModule} from "@nestjs/jwt";
 import {DevtoolsModule} from "@nestjs/devtools-integration";
+import { MetricsController } from "./metrics.controller";
 
 @Module({
     imports: [
@@ -69,7 +70,7 @@ import {DevtoolsModule} from "@nestjs/devtools-integration";
         }),
     ],
     providers: [],
-    controllers: [AppController],
+    controllers: [AppController, MetricsController],
     exports: [WinstonModule, ThrottlerModule, JwtModule],
 })
 export class ApplicationModule {}
