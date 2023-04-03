@@ -5,6 +5,7 @@ import { SwaggerModule, DocumentBuilder } from "@nestjs/swagger";
 import { ValidationPipe } from "@nestjs/common";
 import * as Prometheus from "prom-client";
 import cookieParser from "cookie-parser";
+import { ExpressAdapter } from "@nestjs/platform-express";
 
 async function bootstrap() {
   // Configura el almacenamiento persistente para las métricas
@@ -35,7 +36,6 @@ async function bootstrap() {
   );
   app.use(cookieParser());
 
-  // Elimina el middleware para registrar las solicitudes HTTP
   // Registra la métrica http_requests_total en el middleware de prometheus
   const httpRequestCounter = new Prometheus.Counter({
     name: "http_requests_total",
@@ -43,7 +43,18 @@ async function bootstrap() {
     labelNames: ["method", "path", "status"],
     registers: [prometheus],
   });
-  app.use((req, res, next) => {
+
+  // Convierte la aplicación de NestJS a una aplicación de Express
+  const expressApp = new ExpressAdapter(app);
+
+  // Registra la ruta para las métricas de Prometheus
+  expressApp.get("/metrics", async (req, res) => {
+    res.set("Content-Type", Prometheus.register.contentType);
+    res.send(await Prometheus.register.metrics());
+  });
+
+  // Registra el middleware para registrar las solicitudes HTTP
+  expressApp.use((req, res, next) => {
     const end = res.end;
     res.end = function (...args: any) {
       httpRequestCounter
