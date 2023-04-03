@@ -6,6 +6,7 @@ import { ValidationPipe } from "@nestjs/common";
 import * as Prometheus from "prom-client";
 import cookieParser from "cookie-parser";
 import { Response, NextFunction } from "express";
+import { MetricsController } from "./metrics.controller";
 
 async function bootstrap() {
   // Configura el almacenamiento persistente para las métricas
