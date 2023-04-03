@@ -12,6 +12,6 @@ export class MetricsController {
     @Get('/metrics')
     getMetrics(@Response() res) {
         res.setHeader('Content-Type', this.prometheus.contentType);
-        res.end(this.prometheus.metrics());
+        res.end(this.prometheus.metrics().toString());
     }
 }
