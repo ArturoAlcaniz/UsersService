@@ -10,8 +10,9 @@ export class MetricsController {
     }
 
     @Get('/metrics')
-    getMetrics(@Response() res) {
+    async getMetrics(@Response() res) {
         res.setHeader('Content-Type', this.prometheus.contentType);
-        res.end(this.prometheus.metrics().toString());
+        const metrics = await this.prometheus.metrics();
+        res.send(metrics);
     }
 }
