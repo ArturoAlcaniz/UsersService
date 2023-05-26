@@ -739,9 +739,66 @@ export class UsersController {
         @Res({passthrough: true}) response: Response,
         @Req() request: Request
     ) {
+        let user: User = await this.usersService.findOne({
+            where: {
+                id: this.jwtService.decode(request.cookies["jwt"])["userId"],
+            },
+        });
+
+        if (user == null || user.rol != "ADMIN") {
+            response.status(400).json({
+                message: ["invalid_access"],
+                formError: "access",
+            });
+            this.logger.info(
+                "Fail Create code (invalid_access) {IP} {USER}"
+                    .replace(
+                        "{IP}",
+                        request.headers["x-forwarded-for"].toString()
+                    )
+                    .replace("{USER}", user.email)
+            );
+            return;
+        }
+
         let codes: Code[] = await this.codesService.find({});
 
         return codes;
+    }
+
+    @UseGuards(ThrottlerGuard)
+    @Throttle(100, 3000)
+    @ApiOkResponse()
+    @Get("obtainAllUsers")
+    async getAllUsers(
+        @Res({passthrough: true}) response: Response,
+        @Req() request: Request
+    ) {
+        let user: User = await this.usersService.findOne({
+            where: {
+                id: this.jwtService.decode(request.cookies["jwt"])["userId"],
+            },
+        });
+
+        if (user == null || user.rol != "ADMIN") {
+            response.status(400).json({
+                message: ["invalid_access"],
+                formError: "access",
+            });
+            this.logger.info(
+                "Fail Create code (invalid_access) {IP} {USER}"
+                    .replace(
+                        "{IP}",
+                        request.headers["x-forwarded-for"].toString()
+                    )
+                    .replace("{USER}", user.email)
+            );
+            return;
+        }
+
+        let users: User[] = await this.usersService.find({});
+
+        return users;
     }
 
     @UseGuards(ThrottlerGuard)
