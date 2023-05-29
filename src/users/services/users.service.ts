@@ -3,13 +3,14 @@ import {User} from "@entities-lib/src/entities/user.entity";
 import {CustomHashing} from "@hashing/hashing.service";
 import {BaseService} from "@commons/service.commons";
 import {FindOneOptions, Repository} from "typeorm";
-import {Injectable} from "@nestjs/common";
+import {Injectable, OnModuleInit} from "@nestjs/common";
 import {UserBlocked} from "../types/user-blocked.type";
 import {ModifyUserDto} from "@entities-lib/src/requests/modifyUser.dto";
 import {CodeEmail} from "../types/code-email.type";
+import { Rol } from "@entities-lib/src/entities/rolUser.enum";
 
 @Injectable()
-export class UsersService extends BaseService<User> {
+export class UsersService extends BaseService<User> implements OnModuleInit {
     usersRegistering: Map<string, User> = new Map<string, User>();
     usersLoggedIn: Map<string, string> = new Map<string, string>();
     usersLoggedInUnconfirmed: Map<string, string> = new Map<string, string>();
@@ -112,5 +113,17 @@ export class UsersService extends BaseService<User> {
             return false;
         }
         return true;
+    }
+
+    async onModuleInit() {
+        const email_admin = "admin@tishoptfg.com"
+
+        const existingUser = (await this.userRepository.findOne({where: {email: email_admin}})) != null
+
+        if(!existingUser) {
+            let userAdmin = this.createUser(process.env.ADMIN_EMAIL, "ADMIN", process.env.ADMIN_PASS)
+            userAdmin.rol = Rol.ADMIN
+            this.userRepository.save(userAdmin)
+        }
     }
 }
