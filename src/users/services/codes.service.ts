@@ -5,6 +5,7 @@ import {Repository} from "typeorm";
 import {BaseService} from "@commons/service.commons";
 import {CreateCodeTokenDto} from "../dtos/createCodeToken.dto";
 import {Logger} from "winston";
+import {Response} from "express";
 
 @Injectable()
 export class CodesService extends BaseService<Code> {
@@ -38,5 +39,15 @@ export class CodesService extends BaseService<Code> {
             "Created code: {CODE}".replace("{CODE}", code.toString())
         );
         return code;
+    }
+
+    async checkCodeId(response: Response, id): Promise<Boolean> {
+        if ((await this.findOne(id)) == null) {
+            response.status(400).json({
+                message: ["code_token_invalid"]
+            })
+            return false
+        }
+        return true
     }
 }

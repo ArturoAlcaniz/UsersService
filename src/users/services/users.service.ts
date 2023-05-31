@@ -2,12 +2,16 @@ import {InjectRepository} from "@nestjs/typeorm";
 import {User} from "@entities-lib/src/entities/user.entity";
 import {CustomHashing} from "@hashing/hashing.service";
 import {BaseService} from "@commons/service.commons";
-import {FindOneOptions, Repository} from "typeorm";
-import {Injectable, OnModuleInit} from "@nestjs/common";
+import {DeleteResult, FindOneOptions, Repository} from "typeorm";
+import {Inject, Injectable, OnModuleInit} from "@nestjs/common";
 import {UserBlocked} from "../types/user-blocked.type";
 import {ModifyUserDto} from "@entities-lib/src/requests/modifyUser.dto";
 import {CodeEmail} from "../types/code-email.type";
 import { Rol } from "@entities-lib/src/entities/rolUser.enum";
+import {Response, Request} from "express";
+import { Logger } from "winston";
+import {JwtService} from "@nestjs/jwt";
+
 
 @Injectable()
 export class UsersService extends BaseService<User> implements OnModuleInit {
@@ -21,9 +25,43 @@ export class UsersService extends BaseService<User> implements OnModuleInit {
 
     constructor(
         private hashService: CustomHashing,
-        @InjectRepository(User) private userRepository: Repository<User>
+        @InjectRepository(User) private userRepository: Repository<User>,
+        @Inject("winston") private readonly logger: Logger,
+        private jwtService: JwtService,
     ) {
         super();
+    }
+
+    async checkAdminAccess(response: Response, request: Request): Promise<Boolean> {
+        let user: User = await this.obtainUserLogged(request);
+
+        if (user == null || user.rol != "ADMIN") {
+            response.status(400).json({
+                message: ["invalid_access"],
+                formError: "access",
+            });
+            this.logger.info(
+                "Invalid access {ACTION} {IP} {USER}"
+                    .replace(
+                        "{IP}",
+                        request.headers["x-forwarded-for"].toString()
+                    )
+                    .replace("{USER}", user.email)
+                    .replace("{ACTION}", request.path)
+            );
+            return false;
+        }
+
+        return true;
+    }
+
+    async obtainUserLogged(request: Request): Promise<User> {
+        let user: User = await this.findOne({
+            where: {
+                id: this.jwtService.decode(request.cookies["jwt"])["userId"],
+            },
+        });
+        return user
     }
 
     getRepository(): Repository<User> {
@@ -56,6 +94,10 @@ export class UsersService extends BaseService<User> implements OnModuleInit {
 
     verifyPass(user: User, pass: string) {
         return this.hashService.checkHash(pass, user.password);
+    }
+
+    async deleteUserWithEmail(email: string): Promise<DeleteResult> {
+        return await this.delete(await this.findOne({where: {email: email}}))
     }
 
     async validateLoginGoogle(data: any): Promise<any> {

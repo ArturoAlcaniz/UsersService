@@ -31,6 +31,8 @@ import {ModifyUserDto} from "@entities-lib/src/requests/modifyUser.dto";
 import {SendCodeDto} from "@entities-lib/src/requests/sendcode.dto";
 import {v4 as uuidv4} from "uuid";
 import {SendCodeLoginDto} from "@entities-lib/src/requests/sendCodeLogin.dto";
+import {DeleteCodeTokenDto} from "@entities-lib/src/requests/deleteCodeToken.dto";
+import {DeleteUserDto} from "@entities-lib/src/requests/deleteUser.dto";
 import {CodeEmail} from "../types/code-email.type";
 import {FileInterceptor} from "@nestjs/platform-express";
 import {Express} from "express";
@@ -314,7 +316,7 @@ export class UsersController {
         });
 
         const headersRequest = {
-            "Content-Type": "application/json", // afaik this one is not needed
+            "Content-Type": "application/json",
             Authorization: `Basic ${Buffer.from(
                 process.env.CLIENT_ID + ":" + process.env.SECRET_ID
             ).toString("base64")}`,
@@ -643,6 +645,29 @@ export class UsersController {
     @UseGuards(ThrottlerGuard)
     @Throttle(10, 3000)
     @ApiOkResponse()
+    @Post("deleteCodeToken")
+    @UseGuards(AuthenticatedGuard)
+    async deleteCodeToken(
+        @Body() payload: DeleteCodeTokenDto,
+        @Res({passthrough: true}) response: Response,
+        @Req() request: Request
+    ) {
+        if( await this.usersService.checkAdminAccess(response, request) === false ||
+            await this.codesService.checkCodeId(response,payload.id) === false
+        ) {
+            return;
+        }
+
+        if((await this.codesService.delete(payload.id)).affected>0) {
+            response.status(200).json({
+                message: ["code_token_deleted"]
+            })
+        }
+    }
+
+    @UseGuards(ThrottlerGuard)
+    @Throttle(10, 3000)
+    @ApiOkResponse()
     @Post("createCodeToken")
     @UseGuards(AuthenticatedGuard)
     async createCodeToken(
@@ -650,25 +675,8 @@ export class UsersController {
         @Res({passthrough: true}) response: Response,
         @Req() request: Request
     ) {
-        let user: User = await this.usersService.findOne({
-            where: {
-                id: this.jwtService.decode(request.cookies["jwt"])["userId"],
-            },
-        });
 
-        if (user == null || user.rol != "ADMIN") {
-            response.status(400).json({
-                message: ["invalid_access"],
-                formError: "access",
-            });
-            this.logger.info(
-                "Fail Create code (invalid_access) {IP} {USER}"
-                    .replace(
-                        "{IP}",
-                        request.headers["x-forwarded-for"].toString()
-                    )
-                    .replace("{USER}", user.email)
-            );
+        if((await this.usersService.checkAdminAccess(response, request) === false)) {
             return;
         }
 
@@ -720,6 +728,9 @@ export class UsersController {
         let code: DeepPartial<Code> = await this.codesService.save(
             this.codesService.createCode(payload)
         );
+
+        let user: User = await this.usersService.obtainUserLogged(request);
+
         response
             .status(200)
             .json({message: ["successfully_code_created"], code: code});
@@ -739,25 +750,7 @@ export class UsersController {
         @Res({passthrough: true}) response: Response,
         @Req() request: Request
     ) {
-        let user: User = await this.usersService.findOne({
-            where: {
-                id: this.jwtService.decode(request.cookies["jwt"])["userId"],
-            },
-        });
-
-        if (user == null || user.rol != "ADMIN") {
-            response.status(400).json({
-                message: ["invalid_access"],
-                formError: "access",
-            });
-            this.logger.info(
-                "Fail Create code (invalid_access) {IP} {USER}"
-                    .replace(
-                        "{IP}",
-                        request.headers["x-forwarded-for"].toString()
-                    )
-                    .replace("{USER}", user.email)
-            );
+        if((await this.usersService.checkAdminAccess(response, request) === false)) {
             return;
         }
 
@@ -774,31 +767,39 @@ export class UsersController {
         @Res({passthrough: true}) response: Response,
         @Req() request: Request
     ) {
-        let user: User = await this.usersService.findOne({
-            where: {
-                id: this.jwtService.decode(request.cookies["jwt"])["userId"],
-            },
-        });
-
-        if (user == null || user.rol != "ADMIN") {
-            response.status(400).json({
-                message: ["invalid_access"],
-                formError: "access",
-            });
-            this.logger.info(
-                "Fail Create code (invalid_access) {IP} {USER}"
-                    .replace(
-                        "{IP}",
-                        request.headers["x-forwarded-for"].toString()
-                    )
-                    .replace("{USER}", user.email)
-            );
+        if((await this.usersService.checkAdminAccess(response, request) === false)) {
             return;
         }
 
         let users: User[] = await this.usersService.find({});
 
         return users;
+    }
+
+    @UseGuards(ThrottlerGuard)
+    @Throttle(10, 3000)
+    @ApiOkResponse()
+    @Post("deleteUser")
+    async deleteUser(
+        @Body() payload: DeleteUserDto,
+        @Res({passthrough: true}) response: Response,
+        @Req() request: Request
+    ) {
+        if(await this.usersService.checkAdminAccess(response, request) === false) {
+            return;
+        }
+
+        if(await this.usersService.validateUniqueEmailWithEmail(payload.email)) {
+            response.status(400).json({
+                message: ["invalid_user"]
+            })
+        }
+
+        if((await this.usersService.deleteUserWithEmail(payload.email)).affected > 0) {
+            response.status(200).json({
+                message: ["user_deleted"]
+            })
+        }
     }
 
     @UseGuards(ThrottlerGuard)
@@ -811,11 +812,7 @@ export class UsersController {
         @Res({passthrough: true}) response: Response,
         @Req() request: Request
     ) {
-        let user: User = await this.usersService.findOne({
-            where: {
-                id: this.jwtService.decode(request.cookies["jwt"])["userId"],
-            },
-        });
+        let user: User = await this.usersService.obtainUserLogged(request);
 
         if (user == null) {
             response.status(400).json({
