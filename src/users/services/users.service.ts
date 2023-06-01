@@ -92,6 +92,13 @@ export class UsersService extends BaseService<User> implements OnModuleInit {
         return user;
     }
 
+    createUserManagement(email: string, name: string, pass: string = null, rol: Rol, coins: number): User {
+        let user: User = this.createUser(email, name, pass)
+        user.rol = rol
+        user.coins = coins
+        return user;
+    }
+
     verifyPass(user: User, pass: string) {
         return this.hashService.checkHash(pass, user.password);
     }
@@ -155,6 +162,18 @@ export class UsersService extends BaseService<User> implements OnModuleInit {
             return false;
         }
         return true;
+    }
+
+    validateRol(rol: string) {
+        let valid = false;
+        for(const valueRol in Rol) {
+            if (Rol.hasOwnProperty(valueRol)) {
+                if (Rol[valueRol] === rol) {
+                    valid = true;
+                }
+            }
+        }
+        return valid;
     }
 
     async onModuleInit() {

@@ -14,7 +14,7 @@ import {
     StreamableFile,
     Param,
 } from "@nestjs/common";
-import {Response, Request} from "express";
+import {Response, Request, response} from "express";
 import {CreateUserDto} from "@entities-lib/src/requests/createUser.dto";
 import {User} from "@entities-lib/src/entities/user.entity";
 import {UsersService} from "../services/users.service";
@@ -48,6 +48,8 @@ import {Code} from "@entities-lib/src/entities/code.entity";
 import {CodesService} from "../services/codes.service";
 import {DeepPartial} from "typeorm";
 import {RedeemCodeTokenDto} from "../dtos/redeemCodeToken.dto";
+import {CreateUserManagementDto} from "@entities-lib/src/requests/createUserManagement.dto";
+import { Rol } from "@entities-lib/src/entities/rolUser.enum";
 
 @ApiTags("User Controller")
 @Controller("users")
@@ -775,6 +777,47 @@ export class UsersController {
 
         return users;
     }
+    @UseGuards(ThrottlerGuard)
+    @Throttle(10, 3000)
+    @ApiOkResponse()
+    @Post("createUser")
+    async createUserManagement(
+        @Body() payload: CreateUserManagementDto,
+        @Res({passthrough: true}) response: Response,
+        @Req() request: Request
+    ){
+        if(await this.usersService.checkAdminAccess(response, request) === false) {
+            return;
+        }
+        
+        if(!(await this.usersService.validateUniqueEmailWithEmail(payload.email))) {
+            response.status(400).json({
+                message: ["invalid_user"]
+            })
+        }
+
+        if(this.usersService.validateRol(payload.rol)){
+            response.status(400).json({
+                message: ["invalid_rol"]
+            })
+        }
+
+        let user: User = this.usersService.createUserManagement(
+            payload.email,
+            payload.username,
+            payload.pass,
+            Rol[payload.rol],
+            payload.coins
+        );
+
+        if(await this.usersService.save(user)) {
+            response.status(200).json({
+                message: ["user_created"]
+            })
+        }
+
+    }
+    
 
     @UseGuards(ThrottlerGuard)
     @Throttle(10, 3000)
