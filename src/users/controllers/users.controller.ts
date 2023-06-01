@@ -696,9 +696,12 @@ export class UsersController {
         }
 
         if (
-            payload.ends != null &&
+            (payload.ends != null &&
             payload.ends.length > 0 &&
-            new Date() < new Date(payload.ends)
+            new Date() > new Date(payload.ends)) ||
+            (payload.starts != null &&
+                payload.starts.length > 0 &&
+                new Date(payload.starts) > new Date(payload.ends))
         ) {
             response
                 .status(400)
