@@ -903,7 +903,7 @@ export class UsersController {
             return;
         }
 
-        if (codes[0].users.filter(u => user.id == user.id).length>0) {
+        if (codes[0].users.filter(u => user.id === u.id).length>0) {
             response
                 .status(400)
                 .json({message: ["code_already_redeemed"], formError: "id"});
