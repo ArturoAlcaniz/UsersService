@@ -876,8 +876,13 @@ export class UsersController {
             return;
         }
 
-        let codes = await this.codesService.find(payload.id);
-        if (codes.length == 0) {
+        let code: Code = await this.codesService.findOne({
+            relations: ["users"],
+            where: {
+                id: payload.id
+            }
+        });
+        if (!code) {
             response
                 .status(400)
                 .json({message: ["code_not_exist"], formError: "id"});
@@ -890,7 +895,7 @@ export class UsersController {
             return;
         }
 
-        if (codes[0].amount <= 0) {
+        if (code.amount <= 0) {
             response
                 .status(400)
                 .json({message: ["code_not_available"], formError: "id"});
@@ -903,7 +908,7 @@ export class UsersController {
             return;
         }
 
-        if (codes[0].users.filter(u => user.id === u.id).length>0) {
+        if (code.users && code.users.filter(u => user.id === u.id).length>0) {
             response
                 .status(400)
                 .json({message: ["code_already_redeemed"], formError: "id"});
@@ -916,12 +921,18 @@ export class UsersController {
             return;
         }
 
-        user.coins = user.coins + codes[0].coins;
+        user.coins = user.coins + code.coins;
         await this.usersService.save(user);
 
-        codes[0].amount = codes[0].amount - 1;
-        codes[0].users.push(user);
-        await this.codesService.save(codes[0]);
+        code.amount = code.amount - 1;
+        
+        if(code.users) {
+            code.users.push(user);
+        } else {
+            code.users = [user];
+        }
+
+        await this.codesService.save(code);
 
         response
             .status(200)
@@ -930,7 +941,7 @@ export class UsersController {
             "Create Code Sucessfully {CODE} {IP} {USER}"
                 .replace("{IP}", request.headers["x-forwarded-for"].toString())
                 .replace("{USER}", user.email)
-                .replace("{CODE}", codes[0].id)
+                .replace("{CODE}", code.id)
         );
     }
 
