@@ -866,7 +866,7 @@ export class UsersController {
                 formError: "access",
             });
             this.logger.info(
-                "Fail Create code (invalid_access) {IP} {USER}"
+                "Fail Redeem code (invalid_access) {IP} {USER}"
                     .replace(
                         "{IP}",
                         request.headers["x-forwarded-for"].toString()
@@ -902,10 +902,25 @@ export class UsersController {
             );
             return;
         }
+
+        if (codes[0].users.find(u => user.id == user.id)) {
+            response
+                .status(400)
+                .json({message: ["code_already_redeemed"], formError: "id"});
+            this.logger.info(
+                "Fail Redeem Code (code_already_redeemed) {IP}".replace(
+                    "{IP}",
+                    request.headers["x-forwarded-for"].toString()
+                )
+            );
+            return;
+        }
+
         user.coins = user.coins + codes[0].coins;
         await this.usersService.save(user);
 
         codes[0].amount = codes[0].amount - 1;
+        codes[0].users.push(user);
         await this.codesService.save(codes[0]);
 
         response
