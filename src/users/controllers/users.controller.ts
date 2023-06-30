@@ -716,7 +716,7 @@ export class UsersController {
         }
 
         if (
-            (await this.codesService.findOne({where: {ID: payload.id}})) != null
+            (await this.codesService.findOne({where: {id: payload.id}})) != null
         ) {
             response
                 .status(400)
