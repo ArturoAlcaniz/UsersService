@@ -670,6 +670,85 @@ export class UsersController {
     @UseGuards(ThrottlerGuard)
     @Throttle(10, 3000)
     @ApiOkResponse()
+    @Post("modifyCodeToken")
+    @UseGuards(AuthenticatedGuard)
+    async modifyCodeToken(
+        @Body() payload: CreateCodeTokenDto,
+        @Res({passthrough: true}) response: Response,
+        @Req() request: Request
+    ) {
+        if((await this.usersService.checkAdminAccess(response, request) === false)) {
+            return;
+        }
+        
+        if (payload.id == null || payload.id.length == 0) {
+            response
+                .status(400)
+                .json({message: ["invalid_code"], formError: "id"});
+            this.logger.info(
+                "Fail Create code (invalid_code) {IP}".replace(
+                    "{IP}",
+                    request.headers["x-forwarded-for"].toString()
+                )
+            );
+            return;
+        }
+
+        if (!this.codesService.findOne({
+            where: {id: payload.id}
+        })) {
+            response
+                .status(400)
+                .json({message: ["code_not_exist"], formError: "id"});
+            this.logger.info(
+                "Fail Modify code (code_not_exist) {IP}".replace(
+                    "{IP}",
+                    request.headers["x-forwarded-for"].toString()
+                )
+            );
+            return
+        }
+
+        if (
+            (payload.ends != null &&
+            payload.ends.length > 0 &&
+            new Date() > new Date(payload.ends)) ||
+            (payload.starts != null &&
+                payload.starts.length > 0 &&
+                new Date(payload.starts) > new Date(payload.ends))
+        ) {
+            response
+                .status(400)
+                .json({message: ["invalid_enddate"], formError: "ends"});
+            this.logger.info(
+                "Fail Create code (invalid_enddate) {IP}".replace(
+                    "{IP}",
+                    request.headers["x-forwarded-for"].toString()
+                )
+            );
+            return;
+        }
+
+        let code: DeepPartial<Code> = await this.codesService.save(
+            this.codesService.createCode(payload)
+        );
+
+        let user: User = await this.usersService.obtainUserLogged(request);
+
+        response
+            .status(200)
+            .json({message: ["successfully_code_modified"], code: code});
+        this.logger.info(
+            "Modify Code Sucessfully {CODE} {IP} {USER}"
+                .replace("{IP}", request.headers["x-forwarded-for"].toString())
+                .replace("{USER}", user.email)
+                .replace("{CODE}", code.id)
+        );
+    } 
+
+    @UseGuards(ThrottlerGuard)
+    @Throttle(10, 3000)
+    @ApiOkResponse()
     @Post("createCodeToken")
     @UseGuards(AuthenticatedGuard)
     async createCodeToken(
