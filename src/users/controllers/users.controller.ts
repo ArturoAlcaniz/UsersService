@@ -344,7 +344,7 @@ export class UsersController {
             user
         );
 
-        if (!this.paymentsService.validatePayment(payment)) {
+        if (!(await this.paymentsService.validatePayment(payment))) {
             response.status(400).json({message: "Payment already added"});
             return;
         }
@@ -375,7 +375,7 @@ export class UsersController {
                     payload.token
             )
         );
-        const validated = this.usersService.validateLoginGoogle(
+        const validated = await this.usersService.validateLoginGoogle(
             infoUserGoogle.data
         );
 
@@ -694,9 +694,9 @@ export class UsersController {
             return;
         }
 
-        if (!this.codesService.findOne({
+        if (!(await this.codesService.findOne({
             where: {id: payload.id}
-        })) {
+        }))) {
             response
                 .status(400)
                 .json({message: ["code_not_exist"], formError: "id"});
