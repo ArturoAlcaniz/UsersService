@@ -750,6 +750,19 @@ export class UsersController {
     @UseGuards(ThrottlerGuard)
     @Throttle(100, 3000)
     @ApiOkResponse()
+    @Get("obtainCode/:code")
+    async getCode(@Param("code") code: string) {
+        let c: Code = await this.codesService.findOne({
+            where: {
+                id: code
+            }
+        })
+        return c;
+    }
+
+    @UseGuards(ThrottlerGuard)
+    @Throttle(100, 3000)
+    @ApiOkResponse()
     @Get("obtainAllCodes")
     async getAllCodes(
         @Res({passthrough: true}) response: Response,
