@@ -1164,10 +1164,6 @@ export class UsersController {
         @Res({passthrough: true}) response: Response,
         @Req() request: Request
     ) {
-        if((await this.usersService.checkAdminAccess(response, request) === false)) {
-            return;
-        }
-
         let user: User = await this.usersService.obtainUserLogged(request);
 
         let productsToBuy : Product[] = await this.productsService.find(payload.products);
