@@ -20,6 +20,7 @@ import {JwtModule} from "@nestjs/jwt";
 import {AuthenticatedController} from "./controllers/authenticated.controller";
 import {Code} from "@entities-lib/src/entities/code.entity";
 import {CodesService} from "./services/codes.service";
+import { ProductsService } from "./services/products.service";
 
 @Global()
 @Module({
@@ -45,8 +46,8 @@ import {CodesService} from "./services/codes.service";
         WinstonModule,
         ThrottlerModule,
     ],
-    providers: [UsersService, PaymentsService, CodesService],
+    providers: [UsersService, PaymentsService, CodesService, ProductsService],
     controllers: [UsersController, SessionsController, AuthenticatedController],
-    exports: [UsersService, PaymentsService, JwtModule, CodesService],
+    exports: [UsersService, PaymentsService, JwtModule, CodesService, ProductsService],
 })
 export class UsersModule {}
