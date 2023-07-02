@@ -47,9 +47,12 @@ import {CreateCodeTokenDto} from "../dtos/createCodeToken.dto";
 import {Code} from "@entities-lib/src/entities/code.entity";
 import {CodesService} from "../services/codes.service";
 import {DeepPartial} from "typeorm";
-import {RedeemCodeTokenDto} from "../dtos/redeemCodeToken.dto";
 import {CreateUserManagementDto} from "@entities-lib/src/requests/createUserManagement.dto";
 import { Rol } from "@entities-lib/src/entities/rolUser.enum";
+import {CheckoutDto} from "@entities-lib/src/requests/checkout.dto";
+import {ProductsService} from "../services/products.service";
+import { Product } from "@entities-lib/src/entities/product.entity";
+import { RedeemCodeTokenDto } from "@entities-lib/src/requests/redeemCodeToken.dto";
 
 @ApiTags("User Controller")
 @Controller("users")
@@ -60,6 +63,7 @@ export class UsersController {
         private paymentsService: PaymentsService,
         private jwtService: JwtService,
         private httpService: HttpService,
+        private productsService: ProductsService,
         @Inject("winston")
         private readonly logger: Logger
     ) {}
@@ -843,6 +847,7 @@ export class UsersController {
     @Throttle(100, 3000)
     @ApiOkResponse()
     @Get("obtainAllCodes")
+    @UseGuards(AuthenticatedGuard)
     async getAllCodes(
         @Res({passthrough: true}) response: Response,
         @Req() request: Request
@@ -860,6 +865,7 @@ export class UsersController {
     @Throttle(100, 3000)
     @ApiOkResponse()
     @Get("obtainAllUsers")
+    @UseGuards(AuthenticatedGuard)
     async getAllUsers(
         @Res({passthrough: true}) response: Response,
         @Req() request: Request
@@ -876,6 +882,7 @@ export class UsersController {
     @Throttle(10, 3000)
     @ApiOkResponse()
     @Post("createUser")
+    @UseGuards(AuthenticatedGuard)
     async createUserManagement(
         @Body() payload: CreateUserManagementDto,
         @Res({passthrough: true}) response: Response,
@@ -918,6 +925,7 @@ export class UsersController {
     @Throttle(10, 3000)
     @ApiOkResponse()
     @Post("deleteUser")
+    @UseGuards(AuthenticatedGuard)
     async deleteUser(
         @Body() payload: DeleteUserDto,
         @Res({passthrough: true}) response: Response,
@@ -938,6 +946,27 @@ export class UsersController {
                 message: ["user_deleted"]
             })
         }
+    }
+
+    @UseGuards(ThrottlerGuard)
+    @Throttle(10, 3000)
+    @ApiOkResponse()
+    @Get("obtain")
+    @UseGuards(AuthenticatedGuard)
+    async getUser(
+        @Res({passthrough: true}) response: Response,
+        @Req() request: Request,
+        @Param("username") username: string
+    ) {
+        if((await this.usersService.checkAdminAccess(response, request) === false)) {
+            return;
+        }
+
+        let user: User = await this.usersService.findOne({
+            where: {userName: username}
+        });
+
+        return user;
     }
 
     @UseGuards(ThrottlerGuard)
@@ -1123,5 +1152,46 @@ export class UsersController {
 
     checkCodeEmail(code: CodeEmail) {
         return new Date().getTime() <= code.expiration;
+    }
+
+    @UseGuards(ThrottlerGuard)
+    @Throttle(20, 3000)
+    @ApiOkResponse()
+    @Post("checkout")
+    @UseGuards(AuthenticatedGuard)
+    async checkout(
+        @Body() payload: CheckoutDto,
+        @Res({passthrough: true}) response: Response,
+        @Req() request: Request
+    ) {
+        if((await this.usersService.checkAdminAccess(response, request) === false)) {
+            return;
+        }
+
+        let user: User = await this.usersService.obtainUserLogged(request);
+
+        let productIds = payload.products.map(p => p.id);
+
+        let productsToBuy : Product[] = await this.productsService.find(productIds);
+
+        let totalPrice: number = productsToBuy.reduce((acc: number, item) => {
+            const itemPrice = parseFloat(item.price);
+            return acc + itemPrice;
+        }, 0);
+
+        if (user.coins < totalPrice) {
+            response
+                .status(400)
+                .json({message: ["coins_not_available"], formError: "coins"});
+            this.logger.info(
+                "Fail Checkout (coins_not_available) {IP}".replace(
+                    "{IP}",
+                    request.headers["x-forwarded-for"].toString()
+                )
+            );
+            return;
+        }
+
+        this.logger.info(`Checkout price: ${totalPrice}`)
     }
 }

@@ -31,6 +31,6 @@
     },
     "typeAcquisition": {"include": ["jest"]},
 
-    "include": ["src/**/*"],
+    "include": ["src/**/*", "../entities-lib/src/requests/redeemCodeToken.dto.ts"],
     "exclude": ["node_modules", "**/*.spec.ts", "./dist"]
 }
