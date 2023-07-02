@@ -879,7 +879,7 @@ export class UsersController {
         return users;
     }
     @UseGuards(ThrottlerGuard)
-    @Throttle(10, 3000)
+    @Throttle(100, 3000)
     @ApiOkResponse()
     @Post("createUser")
     @UseGuards(AuthenticatedGuard)
@@ -922,7 +922,7 @@ export class UsersController {
     
 
     @UseGuards(ThrottlerGuard)
-    @Throttle(10, 3000)
+    @Throttle(100, 3000)
     @ApiOkResponse()
     @Post("deleteUser")
     @UseGuards(AuthenticatedGuard)
@@ -949,7 +949,7 @@ export class UsersController {
     }
 
     @UseGuards(ThrottlerGuard)
-    @Throttle(10, 3000)
+    @Throttle(100, 3000)
     @ApiOkResponse()
     @Get("obtain")
     @UseGuards(AuthenticatedGuard)
@@ -1155,7 +1155,7 @@ export class UsersController {
     }
 
     @UseGuards(ThrottlerGuard)
-    @Throttle(20, 3000)
+    @Throttle(200, 3000)
     @ApiOkResponse()
     @Post("checkout")
     @UseGuards(AuthenticatedGuard)
