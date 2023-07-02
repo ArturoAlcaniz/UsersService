@@ -1223,6 +1223,10 @@ export class UsersController {
         invoice.items = invoiceItems;
         this.invoicesService.save(invoice);
 
+        this.logger.info(
+            "Checkout: {INVOICE}".replace("{INVOICE}", JSON.stringify(invoice))
+        );
+
         await lastValueFrom(
             this.httpService.post(
                 `http://${process.env.MAILER_CONTAINER_NAME}:${process.env.MAILER_CONTAINER_PORT}/mailer/sendInvoice`,
