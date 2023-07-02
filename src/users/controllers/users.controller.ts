@@ -1170,9 +1170,7 @@ export class UsersController {
 
         let user: User = await this.usersService.obtainUserLogged(request);
 
-        let productIds = payload.products.map(p => p.id);
-
-        let productsToBuy : Product[] = await this.productsService.find(productIds);
+        let productsToBuy : Product[] = await this.productsService.find(payload.products);
 
         let totalPrice: number = productsToBuy.reduce((acc: number, item) => {
             const itemPrice = parseFloat(item.price);
