@@ -1174,8 +1174,10 @@ export class UsersController {
         let user: User = await this.usersService.obtainUserLogged(request);
         let productsId = payload.products;
 
-        let productsToBuy : Product[] = await this.productsService.getRepository().createQueryBuilder().
-            where('id IN (:...productsId)', { productsId }).getMany();
+        let productsToBuy: Product[] = await this.productsService.getRepository().createQueryBuilder('product')
+        .leftJoinAndSelect('product.user', 'user') // Realiza un left join con la entidad User y establece el alias "user"
+        .where('product.id IN (:...productsId)', { productsId })
+        .getMany();
 
         let totalPrice: number = productsToBuy.reduce((acc: number, item) => {
             const itemPrice = parseFloat(item.price);
