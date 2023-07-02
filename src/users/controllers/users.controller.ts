@@ -1230,7 +1230,7 @@ export class UsersController {
         await lastValueFrom(
             this.httpService.post(
                 `http://${process.env.MAILER_CONTAINER_NAME}:${process.env.MAILER_CONTAINER_PORT}/mailer/sendInvoice`,
-                {invoice: JSON.stringify(invoice)},
+                {invoice: invoice},
                 {
                     headers: {"content-type": "application/json"},
                 }
