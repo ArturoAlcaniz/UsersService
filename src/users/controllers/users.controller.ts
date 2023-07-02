@@ -53,6 +53,11 @@ import {CheckoutDto} from "@entities-lib/src/requests/checkout.dto";
 import {ProductsService} from "../services/products.service";
 import { Product } from "@entities-lib/src/entities/product.entity";
 import { RedeemCodeTokenDto } from "@entities-lib/src/requests/redeemCodeToken.dto";
+import { Invoice } from "@entities-lib/src/entities/invoice.entity";
+import { InvoiceItem } from "@entities-lib/src/entities/invoiceItem.entity";
+import { InvoicesService } from "../services/invoice.service";
+import { InvoiceItemsService } from "../services/invoiceItem.service";
+import { plainToClass } from "class-transformer";
 
 @ApiTags("User Controller")
 @Controller("users")
@@ -65,7 +70,9 @@ export class UsersController {
         private httpService: HttpService,
         private productsService: ProductsService,
         @Inject("winston")
-        private readonly logger: Logger
+        private readonly logger: Logger,
+        private invoicesService: InvoicesService,
+        private invoiceItemsService: InvoiceItemsService
     ) {}
 
     @UseGuards(ThrottlerGuard)
@@ -1174,8 +1181,7 @@ export class UsersController {
             const itemPrice = parseFloat(item.price);
             return acc + itemPrice;
         }, 0);
-        this.logger.info(`Checkout price: ${totalPrice}`)
-        this.logger.info(`max coins user: ${user.coins}`)
+
         if (user.coins < totalPrice) {
             response
                 .status(400)
@@ -1188,5 +1194,44 @@ export class UsersController {
             );
             return;
         }
+
+        user.coins -= totalPrice;
+        
+        if (await this.usersService.save(user)) {
+            response.status(200).json({
+                message: ["successfully_checkout"],
+                coins: user.coins
+            });
+        }
+
+        let invoice: Invoice = new Invoice;
+        invoice.buyer = user;
+        invoice.price = totalPrice.toString();
+        invoice.items = [];
+        invoice = plainToClass(Invoice, await this.invoicesService.save(invoice));
+
+
+        let invoiceItems: InvoiceItem[] = [];
+        for(const product of productsToBuy) {
+            let invoiceItem: InvoiceItem = new InvoiceItem;
+            invoiceItem.product = product;
+            invoiceItem.invoice = invoice;
+            invoiceItems.push(invoiceItem);
+        }
+
+        invoiceItems = plainToClass(InvoiceItem, await this.invoiceItemsService.saveMany(invoiceItems));
+        invoice.items = invoiceItems;
+        this.invoicesService.save(invoice);
+
+        await lastValueFrom(
+            this.httpService.post(
+                `http://${process.env.MAILER_CONTAINER_NAME}:${process.env.MAILER_CONTAINER_PORT}/mailer/sendInvoice`,
+                JSON.stringify(invoice),
+                {
+                    headers: {"content-type": "application/json"},
+                }
+            )
+        );
+
     }
 }

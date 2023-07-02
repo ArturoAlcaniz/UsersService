@@ -21,6 +21,8 @@ import {AuthenticatedController} from "./controllers/authenticated.controller";
 import {Code} from "@entities-lib/src/entities/code.entity";
 import {CodesService} from "./services/codes.service";
 import { ProductsService } from "./services/products.service";
+import {InvoicesService} from "./services/invoice.service";
+import {InvoiceItemsService} from "./services/invoiceItem.service";
 
 @Global()
 @Module({
@@ -46,8 +48,8 @@ import { ProductsService } from "./services/products.service";
         WinstonModule,
         ThrottlerModule,
     ],
-    providers: [UsersService, PaymentsService, CodesService, ProductsService],
+    providers: [UsersService, PaymentsService, CodesService, ProductsService, InvoicesService, InvoiceItemsService],
     controllers: [UsersController, SessionsController, AuthenticatedController],
-    exports: [UsersService, PaymentsService, JwtModule, CodesService, ProductsService],
+    exports: [UsersService, PaymentsService, JwtModule, CodesService, ProductsService, InvoicesService, InvoiceItemsService],
 })
 export class UsersModule {}
