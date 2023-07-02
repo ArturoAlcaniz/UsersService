@@ -1168,7 +1168,7 @@ export class UsersController {
         let productsId = payload.products;
 
         let productsToBuy : Product[] = await this.productsService.getRepository().createQueryBuilder().
-            where('id IN (:...productIds)', { productsId }).getMany();
+            where('id IN (:...productsId)', { productsId }).getMany();
 
         let totalPrice: number = productsToBuy.reduce((acc: number, item) => {
             const itemPrice = parseFloat(item.price);
