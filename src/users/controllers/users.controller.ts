@@ -1172,7 +1172,8 @@ export class UsersController {
             const itemPrice = parseFloat(item.price);
             return acc + itemPrice;
         }, 0);
-
+        this.logger.info(`Checkout price: ${totalPrice}`)
+        this.logger.info(`max coins user: ${user.coins}`)
         if (user.coins < totalPrice) {
             response
                 .status(400)
@@ -1185,7 +1186,5 @@ export class UsersController {
             );
             return;
         }
-
-        this.logger.info(`Checkout price: ${totalPrice}`)
     }
 }
