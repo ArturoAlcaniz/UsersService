@@ -76,7 +76,7 @@ export class UsersController {
     ) {}
 
     @UseGuards(ThrottlerGuard)
-    @Throttle(10, 3000)
+    @Throttle(100, 30)
     @ApiOkResponse()
     @Post("register")
     async createUserSendCode(
@@ -132,7 +132,7 @@ export class UsersController {
     }
 
     @UseGuards(ThrottlerGuard)
-    @Throttle(10, 3000)
+    @Throttle(100, 30)
     @ApiOkResponse()
     @Post("register2")
     async createUser(
@@ -180,7 +180,7 @@ export class UsersController {
     }
 
     @UseGuards(ThrottlerGuard)
-    @Throttle(10, 60)
+    @Throttle(100, 60)
     @ApiOkResponse()
     @Post("login2")
     async login2(
@@ -238,7 +238,7 @@ export class UsersController {
     }
 
     @UseGuards(ThrottlerGuard)
-    @Throttle(10, 60)
+    @Throttle(100, 60)
     @ApiOkResponse()
     @Post("login")
     async login(
@@ -313,7 +313,7 @@ export class UsersController {
     }
 
     @UseGuards(ThrottlerGuard)
-    @Throttle(10, 60)
+    @Throttle(100, 60)
     @UseGuards(AuthenticatedGuard)
     @ApiOkResponse()
     @Post("buyCoins")
@@ -373,7 +373,7 @@ export class UsersController {
     }
 
     @UseGuards(ThrottlerGuard)
-    @Throttle(10, 60)
+    @Throttle(100, 60)
     @ApiOkResponse()
     @Post("loginGoogle")
     async loginGoogle(
@@ -430,7 +430,7 @@ export class UsersController {
     }
 
     @UseGuards(ThrottlerGuard)
-    @Throttle(10, 3000)
+    @Throttle(100, 30)
     @ApiOkResponse()
     @Post("modify")
     @UseGuards(AuthenticatedGuard)
@@ -527,7 +527,7 @@ export class UsersController {
     }
 
     @UseGuards(ThrottlerGuard)
-    @Throttle(20, 3000)
+    @Throttle(200, 30)
     @ApiOkResponse()
     @Get("avatar/:avatar")
     @UseGuards(AuthenticatedGuard)
@@ -544,7 +544,7 @@ export class UsersController {
     }
 
     @UseGuards(ThrottlerGuard)
-    @Throttle(20, 3000)
+    @Throttle(200, 30)
     @ApiOkResponse()
     @Get("avatar")
     @UseGuards(AuthenticatedGuard)
@@ -643,7 +643,7 @@ export class UsersController {
     }
 
     @UseGuards(ThrottlerGuard)
-    @Throttle(10, 60)
+    @Throttle(100, 60)
     @ApiOkResponse()
     @Get("logout")
     @UseGuards(AuthenticatedGuard)
@@ -656,7 +656,7 @@ export class UsersController {
     }
 
     @UseGuards(ThrottlerGuard)
-    @Throttle(10, 3000)
+    @Throttle(100, 30)
     @ApiOkResponse()
     @Post("deleteCodeToken")
     @UseGuards(AuthenticatedGuard)
@@ -679,7 +679,7 @@ export class UsersController {
     }
 
     @UseGuards(ThrottlerGuard)
-    @Throttle(10, 3000)
+    @Throttle(100, 30)
     @ApiOkResponse()
     @Post("modifyCodeToken")
     @UseGuards(AuthenticatedGuard)
@@ -758,7 +758,7 @@ export class UsersController {
     } 
 
     @UseGuards(ThrottlerGuard)
-    @Throttle(10, 3000)
+    @Throttle(100, 30)
     @ApiOkResponse()
     @Post("createCodeToken")
     @UseGuards(AuthenticatedGuard)
@@ -838,7 +838,7 @@ export class UsersController {
     }
 
     @UseGuards(ThrottlerGuard)
-    @Throttle(100, 3000)
+    @Throttle(100, 30)
     @ApiOkResponse()
     @Get("obtainCode/:code")
     async getCode(@Param("code") code: string) {
@@ -851,7 +851,7 @@ export class UsersController {
     }
 
     @UseGuards(ThrottlerGuard)
-    @Throttle(100, 3000)
+    @Throttle(100, 30)
     @ApiOkResponse()
     @Get("obtainAllCodes")
     @UseGuards(AuthenticatedGuard)
@@ -869,7 +869,7 @@ export class UsersController {
     }
 
     @UseGuards(ThrottlerGuard)
-    @Throttle(100, 3000)
+    @Throttle(100, 30)
     @ApiOkResponse()
     @Get("obtainAllUsers")
     @UseGuards(AuthenticatedGuard)
@@ -886,7 +886,7 @@ export class UsersController {
         return users;
     }
     @UseGuards(ThrottlerGuard)
-    @Throttle(100, 3000)
+    @Throttle(100, 30)
     @ApiOkResponse()
     @Post("createUser")
     @UseGuards(AuthenticatedGuard)
@@ -929,7 +929,7 @@ export class UsersController {
     
 
     @UseGuards(ThrottlerGuard)
-    @Throttle(100, 3000)
+    @Throttle(100, 30)
     @ApiOkResponse()
     @Post("deleteUser")
     @UseGuards(AuthenticatedGuard)
@@ -956,7 +956,7 @@ export class UsersController {
     }
 
     @UseGuards(ThrottlerGuard)
-    @Throttle(100, 3000)
+    @Throttle(100, 30)
     @ApiOkResponse()
     @Get("obtain")
     @UseGuards(AuthenticatedGuard)
@@ -977,7 +977,7 @@ export class UsersController {
     }
 
     @UseGuards(ThrottlerGuard)
-    @Throttle(10, 3000)
+    @Throttle(10, 3)
     @ApiOkResponse()
     @Post("redeemCodeToken")
     @UseGuards(AuthenticatedGuard)
@@ -1162,7 +1162,7 @@ export class UsersController {
     }
 
     @UseGuards(ThrottlerGuard)
-    @Throttle(200, 3000)
+    @Throttle(100, 30)
     @ApiOkResponse()
     @Post("checkout")
     @UseGuards(AuthenticatedGuard)
