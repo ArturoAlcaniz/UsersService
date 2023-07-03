@@ -1239,5 +1239,25 @@ export class UsersController {
             )
         );
 
+        let sellers: Map<string, User> = new Map();
+
+        for(const seller of invoice.items.map(i => i.product.user)) {
+            sellers.set(seller.id, seller);
+        }
+
+        for(const seller of sellers) {
+            let invoiceItems: InvoiceItem[] = [];
+            invoice.items.filter(i => i.product.user === seller[1]).forEach(item => invoiceItems.push(item));
+            invoice.items = invoiceItems;
+            await lastValueFrom(
+                this.httpService.post(
+                    `http://${process.env.MAILER_CONTAINER_NAME}:${process.env.MAILER_CONTAINER_PORT}/mailer/sendInvoiceSeller`,
+                    {invoice: invoice},
+                    {
+                        headers: {"content-type": "application/json"},
+                    }
+                )
+            );
+        }
     }
 }
