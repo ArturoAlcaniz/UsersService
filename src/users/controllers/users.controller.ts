@@ -1246,9 +1246,10 @@ export class UsersController {
         }
 
         for(const seller of sellers) {
+            let invoiceCopy = JSON.parse(JSON.stringify(invoice));
             let invoiceItems: InvoiceItem[] = [];
-            invoice.items.filter(i => i.product.user.id === seller[0]).forEach(item => invoiceItems.push(item));
-            invoice.items = invoiceItems;
+            invoiceCopy.items.filter(i => i.product.user.id === seller[0]).forEach(item => invoiceItems.push(item));
+            invoiceCopy.items = invoiceItems;
             await lastValueFrom(
                 this.httpService.post(
                     `http://${process.env.MAILER_CONTAINER_NAME}:${process.env.MAILER_CONTAINER_PORT}/mailer/sendInvoiceSeller`,
