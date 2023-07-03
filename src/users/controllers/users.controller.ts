@@ -1247,7 +1247,7 @@ export class UsersController {
 
         for(const seller of sellers) {
             let invoiceItems: InvoiceItem[] = [];
-            invoice.items.filter(i => i.product.user === seller[1]).forEach(item => invoiceItems.push(item));
+            invoice.items.filter(i => i.product.user.id === seller[0]).forEach(item => invoiceItems.push(item));
             invoice.items = invoiceItems;
             await lastValueFrom(
                 this.httpService.post(
