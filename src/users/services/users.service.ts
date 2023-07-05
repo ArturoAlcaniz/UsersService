@@ -103,8 +103,8 @@ export class UsersService extends BaseService<User> implements OnModuleInit {
         return this.hashService.checkHash(pass, user.password);
     }
 
-    async deleteUserWithEmail(email: string): Promise<DeleteResult> {
-        return await this.delete(await this.findOne({where: {email: email}}))
+    async deleteUserWithId(id: string): Promise<DeleteResult> {
+        return await this.delete(await this.findOne({where: {id: id}}))
     }
 
     async validateLoginGoogle(data: any): Promise<boolean> {

@@ -942,13 +942,15 @@ export class UsersController {
             return;
         }
 
-        if(await this.usersService.validateUniqueEmailWithEmail(payload.email)) {
+        if(await this.usersService.findOne({
+            where: {id: payload.id}
+        })){
             response.status(400).json({
                 message: ["invalid_user"]
             })
         }
 
-        if((await this.usersService.deleteUserWithEmail(payload.email)).affected > 0) {
+        if((await this.usersService.deleteUserWithId(payload.id)).affected > 0) {
             response.status(200).json({
                 message: ["user_deleted"]
             })
