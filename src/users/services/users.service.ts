@@ -99,6 +99,17 @@ export class UsersService extends BaseService<User> implements OnModuleInit {
         return user;
     }
 
+    async modifyUserManagement(email: string, name: string, pass: string = null, rol: Rol, coins: number): Promise<User> {
+        let user: User = await this.findOne({where: { email: email}})
+        user.userName = name
+        if (pass != null) {
+            user.password = this.hashService.stringToHash(pass);
+        }
+        user.rol = rol
+        user.coins = coins
+        return user;
+    }
+
     verifyPass(user: User, pass: string) {
         return this.hashService.checkHash(pass, user.password);
     }

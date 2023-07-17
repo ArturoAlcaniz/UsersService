@@ -58,6 +58,8 @@ import { InvoiceItem } from "@entities-lib/src/entities/invoiceItem.entity";
 import { InvoicesService } from "../services/invoice.service";
 import { InvoiceItemsService } from "../services/invoiceItem.service";
 import { plainToClass } from "class-transformer";
+import {ModifyUserManagementDto} from "@entities-lib/src/requests/editUserManagement.dto";
+
 
 @ApiTags("User Controller")
 @Controller("users")
@@ -916,7 +918,7 @@ export class UsersController {
             payload.username,
             payload.pass,
             Rol[payload.rol],
-            payload.coins
+            parseInt(payload.coins)
         );
 
         if(await this.usersService.save(user)) {
@@ -926,7 +928,47 @@ export class UsersController {
         }
 
     }
-    
+    @UseGuards(ThrottlerGuard)
+    @Throttle(100, 30)
+    @ApiOkResponse()
+    @Post("modifyUser")
+    @UseGuards(AuthenticatedGuard)
+    async modifyUserManagement(
+        @Body() payload: ModifyUserManagementDto,
+        @Res({passthrough: true}) response: Response,
+        @Req() request: Request
+    ){
+        if(await this.usersService.checkAdminAccess(response, request) === false) {
+            return;
+        }
+        
+        if(await this.usersService.validateUniqueEmailWithEmail(payload.email)) {
+            response.status(400).json({
+                message: ["invalid_user"]
+            })
+        }
+
+        if(this.usersService.validateRol(payload.rol)){
+            response.status(400).json({
+                message: ["invalid_rol"]
+            })
+        }
+
+        let user: User = await this.usersService.modifyUserManagement(
+            payload.email,
+            payload.username,
+            payload.pass,
+            Rol[payload.rol],
+            parseInt(payload.coins)
+        );
+
+        if(await this.usersService.save(user)) {
+            response.status(200).json({
+                message: ["user_created"]
+            })
+        }
+
+    }
 
     @UseGuards(ThrottlerGuard)
     @Throttle(100, 30)
