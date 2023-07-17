@@ -942,9 +942,9 @@ export class UsersController {
             return;
         }
 
-        if(await this.usersService.findOne({
+        if(!(await this.usersService.findOne({
             where: {id: payload.id}
-        })){
+        }))){
             response.status(400).json({
                 message: ["invalid_user"]
             })
