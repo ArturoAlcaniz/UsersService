@@ -948,6 +948,7 @@ export class UsersController {
             response.status(400).json({
                 message: ["invalid_user"]
             })
+            return;
         }
 
         if((await this.usersService.deleteUserWithId(payload.id)).affected > 0) {
