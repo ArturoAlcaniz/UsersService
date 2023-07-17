@@ -104,7 +104,7 @@ export class UsersService extends BaseService<User> implements OnModuleInit {
     }
 
     async deleteUserWithId(id: string): Promise<DeleteResult> {
-        return await this.delete(await this.findOne({where: {id: id}}))
+        return await this.delete(id)
     }
 
     async validateLoginGoogle(data: any): Promise<boolean> {
