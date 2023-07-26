@@ -176,15 +176,8 @@ export class UsersService extends BaseService<User> implements OnModuleInit {
     }
 
     validateRol(rol: string) {
-        let valid = false;
-        for(const valueRol in Rol) {
-            if (Rol.hasOwnProperty(valueRol)) {
-                if (Rol[valueRol] === rol) {
-                    valid = true;
-                }
-            }
-        }
-        return valid;
+        const roles = Object.values(Rol); // Obtenemos un array con los valores del enum Rol
+        return roles.includes(rol as Rol);
     }
 
     async onModuleInit() {

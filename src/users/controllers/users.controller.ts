@@ -946,12 +946,14 @@ export class UsersController {
             response.status(400).json({
                 message: ["invalid_user"]
             })
+            return;
         }
 
         if(this.usersService.validateRol(payload.rol)){
             response.status(400).json({
                 message: ["invalid_rol"]
             })
+            return;
         }
 
         let user: User = await this.usersService.modifyUserManagement(
