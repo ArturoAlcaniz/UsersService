@@ -5,7 +5,7 @@ import {BaseService} from "@commons/service.commons";
 import {DeleteResult, FindOneOptions, Repository} from "typeorm";
 import {Inject, Injectable, OnModuleInit} from "@nestjs/common";
 import {UserBlocked} from "../types/user-blocked.type";
-import {ModifyUserDto} from "@entities-lib/src/requests/modifyUser.dto";
+import {ModifyUserDto} from "@root/src/users/dtos/modifyUser.dto";
 import {CodeEmail} from "../types/code-email.type";
 import { Rol } from "@entities-lib/src/entities/rolUser.enum";
 import {Response, Request} from "express";

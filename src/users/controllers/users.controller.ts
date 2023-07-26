@@ -27,7 +27,7 @@ import {ApiOkResponse, ApiTags} from "@nestjs/swagger";
 import {Logger} from "winston";
 import {UserBlocked} from "../types/user-blocked.type";
 import {Throttle, ThrottlerGuard} from "@nestjs/throttler";
-import {ModifyUserDto} from "@entities-lib/src/requests/modifyUser.dto";
+import {ModifyUserDto} from "@root/src/users/dtos/modifyUser.dto";
 import {SendCodeDto} from "@entities-lib/src/requests/sendcode.dto";
 import {v4 as uuidv4} from "uuid";
 import {SendCodeLoginDto} from "@entities-lib/src/requests/sendCodeLogin.dto";
