@@ -1,10 +1,9 @@
 {
     "compilerOptions": {
-        "lib": ["es5", "es6", "dom", "ESNext"],
+        "lib": ["es5", "es6", "dom"],
         "module": "commonjs",
         "moduleResolution": "node",
         "declaration": true,
-        "declarationMap": true,
         "removeComments": true,
         "baseUrl": "./",
         "paths": {
@@ -16,22 +15,19 @@
         },
         "emitDecoratorMetadata": true,
         "experimentalDecorators": true,
-        "target": "es2022",
+        "target": "es6",
         "sourceMap": true,
         "allowJs": true,
         "outDir": "./dist",
-        "jsx": "preserve",
-        "skipLibCheck": true,
         "resolveJsonModule": true,
         "esModuleInterop": true,
         "incremental": true,
         "types": ["node", "jest"],
         "typeRoots": ["./node_modules/@types", "./src/types"],
-        "preserveConstEnums": true,
-        "forceConsistentCasingInFileNames": false
+        "preserveConstEnums": true
     },
     "typeAcquisition": {"include": ["jest"]},
 
-    "include": ["src/**/*", "../entities-lib/src/requests/redeemCodeToken.dto.ts"],
+    "include": ["src/**/*"],
     "exclude": ["node_modules", "**/*.spec.ts", "./dist"]
 }
